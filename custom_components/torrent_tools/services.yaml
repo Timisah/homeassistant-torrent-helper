@@ -1,0 +1,142 @@
+search_torrents:
+  fields:
+    query:
+      required: true
+      selector:
+        text:
+    year:
+      selector:
+        number:
+          min: 1900
+          max: 2100
+          mode: box
+    terms:
+      selector:
+        text:
+    limit:
+      selector:
+        number:
+          min: 1
+          max: 20
+          mode: box
+get_search_results:
+  fields:
+    search_id:
+      required: true
+      selector:
+        text:
+    offset:
+      selector:
+        number:
+          min: 0
+          max: 10000
+          mode: box
+    limit:
+      selector:
+        number:
+          min: 1
+          max: 20
+          mode: box
+preview_torrent:
+  fields:
+    search_id:
+      required: true
+      selector:
+        text:
+    result_id:
+      selector:
+        text:
+    position:
+      selector:
+        number:
+          min: 1
+          max: 1000
+          mode: box
+add_torrent:
+  fields:
+    search_id:
+      required: true
+      selector:
+        text:
+    result_id:
+      selector:
+        text:
+    position:
+      selector:
+        number:
+          min: 1
+          max: 1000
+          mode: box
+    destination:
+      required: true
+      selector:
+        select:
+          options:
+            - movies
+            - shows
+            - downloads
+    subfolder:
+      selector:
+        text:
+    show_name:
+      selector:
+        text:
+    show_year:
+      selector:
+        number:
+          min: 1900
+          max: 2100
+          mode: box
+    season:
+      selector:
+        number:
+          min: 0
+          max: 9999
+          mode: box
+list_torrents:
+  fields:
+    query:
+      selector:
+        text:
+    offset:
+      selector:
+        number:
+          min: 0
+          max: 10000
+          mode: box
+    limit:
+      selector:
+        number:
+          min: 1
+          max: 20
+          mode: box
+get_torrent:
+  fields:
+    hash:
+      required: true
+      selector:
+        text:
+pause_torrent:
+  fields:
+    hash:
+      required: true
+      selector:
+        text:
+resume_torrent:
+  fields:
+    hash:
+      required: true
+      selector:
+        text:
+remove_torrent:
+  fields:
+    hash:
+      required: true
+      selector:
+        text:
+request_file_deletion:
+  fields:
+    hash:
+      required: true
+      selector:
+        text:
