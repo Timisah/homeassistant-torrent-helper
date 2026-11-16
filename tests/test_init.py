@@ -94,3 +94,18 @@ async def test_remove_entry_deletes_stored_state(hass, aioclient_mock, mock_entr
     await hass.config_entries.async_remove(mock_entry.entry_id)
     await hass.async_block_till_done()
     assert key not in hass_storage
+
+
+async def test_prototype_entry_is_not_migrated(hass, aioclient_mock):
+    """A version-1 entry from the earlier prototype fails cleanly, not with a KeyError."""
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    mock_services(aioclient_mock)
+    legacy = MockConfigEntry(
+        domain=DOMAIN,
+        version=1,
+        data={"jackett_url": JACKETT, "api_key": "x", "attach_openai": True},
+    )
+    legacy.add_to_hass(hass)
+    assert not await hass.config_entries.async_setup(legacy.entry_id)
+    assert legacy.state is ConfigEntryState.MIGRATION_ERROR

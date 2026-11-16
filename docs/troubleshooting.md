@@ -7,6 +7,7 @@
 | qBittorrent *Authentication failed* repeatedly, then *cannot connect* | qBittorrent bans an IP after failed logins. Wait or clear the ban in qBittorrent, then retry with correct credentials. |
 | *TLS certificate could not be verified* | Fix the certificate chain, or disable verification for a trusted self-signed LAN service. |
 | *Jackett has no configured indexers* | Add an indexer in Jackett first. |
+| *Migration error* on an entry from the earlier prototype | The prototype used the same domain with different data and cannot be converted. Remove that entry (and its panel/LLM attachment) and add Torrent Tools again. |
 | Integration shows *Retrying setup* | A service is unreachable. It reconnects automatically; check both URLs and the VPN. |
 | *Re-authentication required* | A service rejected the credentials (changed password or API key). Use the repair prompt. |
 | Assist does not offer torrent tools | Enable *Torrent Tools* in the conversation agent's LLM API settings; use a tool-capable model; check permissions (below). |

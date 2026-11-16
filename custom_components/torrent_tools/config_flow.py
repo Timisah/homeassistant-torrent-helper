@@ -169,7 +169,7 @@ def _clean_roots(user_input: Mapping[str, Any]) -> tuple[dict[str, str], dict[st
 class TorrentToolsConfigFlow(ConfigFlow, domain=DOMAIN):
     """Set up one Jackett + qBittorrent pair."""
 
-    VERSION = 1
+    VERSION = 2
 
     def __init__(self) -> None:
         self._data: dict[str, Any] = {}

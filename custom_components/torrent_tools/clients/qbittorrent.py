@@ -134,7 +134,12 @@ class QBittorrentClient:
                         "qBittorrent refused the login (the IP may be banned after "
                         "failed attempts)."
                     )
-                if response.status != 200 or body.strip() != "Ok.":
+                # Older versions answer 200 "Ok."; newer ones (5.x) answer 204 with
+                # a session cookie. Wrong credentials answer 200 "Fails." or 401.
+                accepted = (response.status == 200 and body.strip() == "Ok.") or (
+                    response.status == 204
+                )
+                if not accepted:
                     raise InvalidAuth("qBittorrent rejected the username or password.")
                 cookies = {k: m.value for k, m in response.cookies.items()}
         except (aiohttp.ClientConnectorCertificateError, aiohttp.ClientSSLError) as err:

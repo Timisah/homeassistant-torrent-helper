@@ -149,7 +149,7 @@ def entry_options(**over: Any) -> dict[str, Any]:
 @pytest.fixture
 def mock_entry() -> MockConfigEntry:
     return MockConfigEntry(
-        domain=DOMAIN, data=entry_data(), options=entry_options(), title="Torrent Tools"
+        domain=DOMAIN, version=2, data=entry_data(), options=entry_options(), title="Torrent Tools"
     )
 
 

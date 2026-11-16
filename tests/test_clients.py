@@ -199,3 +199,47 @@ async def test_jackett_resolve(hass, aioclient_mock):
         await client.async_resolve_magnet("/dl/example/?path=abc")
     with pytest.raises(UnsupportedFeature):
         await client.async_resolve_magnet("http://evil.example/dl/x")
+
+
+async def test_qbit_login_204_with_cookie_accepted(hass, aioclient_mock):
+    """qBittorrent 5.x answers a successful login with 204 and a session cookie."""
+    mock_services(aioclient_mock)
+    override(
+        aioclient_mock,
+        "post",
+        f"{QBT}/api/v2/auth/login",
+        status=204,
+        text="",
+        cookies={"SID": "s204"},
+    )
+    client = qbit(hass)
+    await client.async_validate()
+    assert "SID=s204" in aioclient_mock.mock_calls[-1][3]["Cookie"]
+
+
+async def test_qbit_login_204_but_session_not_authenticated(hass, aioclient_mock):
+    """A 204 alone is not trusted: the follow-up read must succeed."""
+    mock_services(aioclient_mock)
+    override(
+        aioclient_mock,
+        "post",
+        f"{QBT}/api/v2/auth/login",
+        status=204,
+        text="",
+        cookies={"SID": "bad"},
+    )
+    override(aioclient_mock, "get", f"{QBT}/api/v2/app/version", status=403)
+    with pytest.raises(InvalidAuth):
+        await qbit(hass).async_validate()
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [{"status": 200, "text": "Fails."}, {"status": 401, "text": ""}, {"status": 204, "text": ""}],
+)
+async def test_qbit_login_rejections(hass, aioclient_mock, kwargs):
+    """Wrong credentials (200 Fails., 401) and a 204 without a session are refused."""
+    mock_services(aioclient_mock)
+    override(aioclient_mock, "post", f"{QBT}/api/v2/auth/login", **kwargs)
+    with pytest.raises(InvalidAuth):
+        await qbit(hass).async_validate()

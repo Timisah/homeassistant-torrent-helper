@@ -119,3 +119,19 @@ async def async_remove_entry(hass: HomeAssistant, entry: TorrentToolsConfigEntry
     from homeassistant.helpers.storage import Store
 
     await Store(hass, 1, f"{DOMAIN}.{entry.entry_id}.searches", private=True).async_remove()
+
+
+async def async_migrate_entry(hass: HomeAssistant, entry: TorrentToolsConfigEntry) -> bool:
+    """Refuse to load an entry from the earlier prototype instead of crashing.
+
+    Version 1 entries (prototype: Jackett URL and API key only, qBittorrent
+    borrowed from another integration) lack the data this version needs and
+    cannot be converted automatically.
+    """
+    if entry.version == 1:
+        _LOGGER.error(
+            "This Torrent Tools entry was created by the earlier prototype and "
+            "cannot be migrated. Remove it and add Torrent Tools again."
+        )
+        return False
+    return entry.version == 2

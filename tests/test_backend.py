@@ -118,7 +118,10 @@ async def test_anonymous_service_call_denied_by_default(hass, aioclient_mock, mo
 
 async def test_automation_ops_are_explicit(hass, aioclient_mock):
     entry = MockConfigEntry(
-        domain=DOMAIN, data=entry_data(), options=entry_options(**{CONF_AUTOMATION_OPS: ["read"]})
+        version=2,
+        domain=DOMAIN,
+        data=entry_data(),
+        options=entry_options(**{CONF_AUTOMATION_OPS: ["read"]}),
     )
     await prepared(hass, aioclient_mock, entry)
     assert (await call(hass, "list_torrents", {}))["total"] == 0
@@ -127,7 +130,7 @@ async def test_automation_ops_are_explicit(hass, aioclient_mock):
 
 
 async def test_non_admin_needs_explicit_grant(hass, aioclient_mock, hass_read_only_user):
-    entry = MockConfigEntry(domain=DOMAIN, data=entry_data(), options=entry_options())
+    entry = MockConfigEntry(domain=DOMAIN, version=2, data=entry_data(), options=entry_options())
     await prepared(hass, aioclient_mock, entry)
     with pytest.raises(ServiceValidationError, match="no torrent permissions"):
         await call(hass, "list_torrents", {}, hass_read_only_user)
@@ -401,7 +404,7 @@ async def test_rejected_and_unreachable_writes(hass, aioclient_mock, mock_entry,
 
 async def test_destination_rules(hass, aioclient_mock, hass_admin_user):
     entry = MockConfigEntry(
-        domain=DOMAIN, data=entry_data(), options=entry_options(root_downloads="")
+        version=2, domain=DOMAIN, data=entry_data(), options=entry_options(root_downloads="")
     )
     await prepared(hass, aioclient_mock, entry)
     sid = await _selected(hass, hass_admin_user)
@@ -511,7 +514,7 @@ TORRENT = {
 
 
 async def test_control_uses_exact_hash_and_keeps_files(hass, aioclient_mock, hass_admin_user):
-    entry = MockConfigEntry(domain=DOMAIN, data=entry_data(), options=entry_options())
+    entry = MockConfigEntry(domain=DOMAIN, version=2, data=entry_data(), options=entry_options())
     await prepared(hass, aioclient_mock, entry, torrents=[TORRENT])
     listed = await call(hass, "list_torrents", {}, hass_admin_user)
     assert listed["torrents"][0]["progress_percent"] == 50.0
@@ -536,6 +539,7 @@ async def test_file_deletion_needs_admin_approval(
     hass_admin_credential,
 ):
     entry = MockConfigEntry(
+        version=2,
         domain=DOMAIN,
         data=entry_data(),
         options=entry_options(**{CONF_AUTOMATION_OPS: ["request_deletion"]}),
@@ -617,7 +621,7 @@ async def test_file_deletion_needs_admin_approval(
 
 
 async def test_requesting_admin_policy_blocks_other_admins(hass, aioclient_mock, hass_admin_user):
-    entry = MockConfigEntry(domain=DOMAIN, data=entry_data(), options=entry_options())
+    entry = MockConfigEntry(domain=DOMAIN, version=2, data=entry_data(), options=entry_options())
     await prepared(hass, aioclient_mock, entry, torrents=[TORRENT])
     res = await call(hass, "request_file_deletion", {"hash": HASH_A}, hass_admin_user)
     assert res["approval"] == "requesting administrator"
@@ -634,7 +638,7 @@ async def test_requesting_admin_policy_blocks_other_admins(hass, aioclient_mock,
 
 
 async def test_deletion_refused_for_unsafe_paths(hass, aioclient_mock, hass_admin_user):
-    entry = MockConfigEntry(domain=DOMAIN, data=entry_data(), options=entry_options())
+    entry = MockConfigEntry(domain=DOMAIN, version=2, data=entry_data(), options=entry_options())
     await prepared(hass, aioclient_mock, entry, torrents=[TORRENT])
     outside = dict(TORRENT, content_path="/etc")
     shared = dict(TORRENT, hash=HASH_B, content_path="/data/movies/Dune/extra")
