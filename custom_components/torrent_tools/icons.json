@@ -1,0 +1,14 @@
+{
+  "services": {
+    "search_torrents": {"service": "mdi:magnify"},
+    "get_search_results": {"service": "mdi:format-list-numbered"},
+    "preview_torrent": {"service": "mdi:eye"},
+    "add_torrent": {"service": "mdi:download"},
+    "list_torrents": {"service": "mdi:format-list-bulleted"},
+    "get_torrent": {"service": "mdi:information"},
+    "pause_torrent": {"service": "mdi:pause"},
+    "resume_torrent": {"service": "mdi:play"},
+    "remove_torrent": {"service": "mdi:close-circle-outline"},
+    "request_file_deletion": {"service": "mdi:delete-alert"}
+  }
+}

@@ -1,0 +1,320 @@
+{
+  "title": "Torrent Tools",
+  "config": {
+    "step": {
+      "user": {
+        "title": "qBittorrent verbinden",
+        "description": "Ein VPN mit funktionierendem Kill-Switch wird für Jackett UND qBittorrent dringend empfohlen. Diese Integration erstellt kein VPN und prüft keine Leaks; siehe Dokumentation.",
+        "data": {
+          "qbittorrent_url": "qBittorrent-WebUI-URL",
+          "qbittorrent_username": "Benutzername (leer lassen, wenn die WebUI keinen braucht)",
+          "qbittorrent_password": "Passwort",
+          "qbittorrent_verify_ssl": "TLS-Zertifikat prüfen"
+        }
+      },
+      "jackett": {
+        "title": "Jackett verbinden",
+        "description": "Jackett wird nur über seine API angesprochen. Die URL muss von Home Assistant erreichbar sein.",
+        "data": {
+          "jackett_url": "Jackett-URL",
+          "jackett_api_key": "Jackett-API-Schlüssel",
+          "jackett_verify_ssl": "TLS-Zertifikat prüfen"
+        }
+      },
+      "destinations": {
+        "title": "Zielordner",
+        "description": "Pfade so angeben, wie qBittorrent sie sieht (z. B. im Container), nicht als Home-Assistant-Pfade. Mindestens einen festlegen.",
+        "data": {
+          "root_movies": "Filme-Ordner (aus Sicht von qBittorrent)",
+          "root_shows": "Serien-Ordner (aus Sicht von qBittorrent)",
+          "root_downloads": "Allgemeiner Download-Ordner (aus Sicht von qBittorrent)"
+        }
+      },
+      "reauth_menu": {
+        "title": "Erneut anmelden",
+        "menu_options": {
+          "reauth_qbittorrent": "qBittorrent",
+          "reauth_jackett": "Jackett"
+        }
+      },
+      "reauth_qbittorrent": {
+        "title": "qBittorrent",
+        "data": {
+          "qbittorrent_url": "qBittorrent-WebUI-URL",
+          "qbittorrent_username": "Benutzername (leer lassen, wenn die WebUI keinen braucht)",
+          "qbittorrent_password": "Passwort",
+          "qbittorrent_verify_ssl": "TLS-Zertifikat prüfen"
+        }
+      },
+      "reauth_jackett": {
+        "title": "Jackett",
+        "description": "API-Schlüssel leer lassen, um den gespeicherten zu behalten.",
+        "data": {
+          "jackett_url": "Jackett-URL",
+          "jackett_api_key": "Jackett-API-Schlüssel",
+          "jackett_verify_ssl": "TLS-Zertifikat prüfen"
+        }
+      },
+      "reconfigure": {
+        "title": "Neu konfigurieren",
+        "menu_options": {
+          "reconfigure_qbittorrent": "qBittorrent",
+          "reconfigure_jackett": "Jackett"
+        }
+      },
+      "reconfigure_qbittorrent": {
+        "title": "qBittorrent",
+        "description": "Passwort leer lassen, um das gespeicherte zu behalten.",
+        "data": {
+          "qbittorrent_url": "qBittorrent-WebUI-URL",
+          "qbittorrent_username": "Benutzername (leer lassen, wenn die WebUI keinen braucht)",
+          "qbittorrent_password": "Passwort",
+          "qbittorrent_verify_ssl": "TLS-Zertifikat prüfen"
+        }
+      },
+      "reconfigure_jackett": {
+        "title": "Jackett",
+        "description": "API-Schlüssel leer lassen, um den gespeicherten zu behalten.",
+        "data": {
+          "jackett_url": "Jackett-URL",
+          "jackett_api_key": "Jackett-API-Schlüssel",
+          "jackett_verify_ssl": "TLS-Zertifikat prüfen"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen. URL, Port und Dienststatus prüfen.",
+      "invalid_auth": "Anmeldung fehlgeschlagen. Benutzername, Passwort oder API-Schlüssel prüfen.",
+      "ssl_error": "Das TLS-Zertifikat konnte nicht geprüft werden. Zertifikat korrigieren oder Prüfung deaktivieren.",
+      "invalid_url": "Eine einfache http(s)-URL ohne Zugangsdaten eingeben.",
+      "unexpected_response": "Unerwartete Antwort. Die URL muss direkt auf den Dienst zeigen, nicht auf eine Login-Seite oder einen Proxy.",
+      "no_indexers": "Jackett hat keine konfigurierten Indexer. Zuerst mindestens einen in Jackett hinzufügen.",
+      "unknown": "Unerwarteter Fehler. Siehe Home-Assistant-Log.",
+      "invalid_path": "Einen absoluten Pfad mit Schrägstrichen verwenden, z. B. /data/movies.",
+      "no_destination": "Mindestens einen Zielordner festlegen."
+    },
+    "abort": {
+      "reauth_successful": "Erneute Anmeldung erfolgreich.",
+      "reconfigure_successful": "Neukonfiguration erfolgreich.",
+      "single_instance_allowed": "Es wird nur eine Torrent-Tools-Einrichtung unterstützt."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Torrent Tools",
+        "menu_options": {
+          "destinations": "Zielordner",
+          "permissions": "Berechtigungen"
+        }
+      },
+      "destinations": {
+        "title": "Zielordner",
+        "description": "Pfade aus Sicht von qBittorrent.",
+        "data": {
+          "root_movies": "Filme-Ordner (aus Sicht von qBittorrent)",
+          "root_shows": "Serien-Ordner (aus Sicht von qBittorrent)",
+          "root_downloads": "Allgemeiner Download-Ordner (aus Sicht von qBittorrent)"
+        }
+      },
+      "permissions": {
+        "title": "Berechtigungen",
+        "description": "Administratoren haben immer Zugriff (Dateilöschung braucht weiterhin die Bestätigung eines Administrators). Alles Folgende ist aus, bis Sie es aktivieren.\n\n**Vertrauenswürdige Sprachgeräte:** Wer mit einem vertrauten Assist-Satelliten sprechen kann, ist damit autorisiert. Das ist keine Sprechererkennung. Sprachzugriff bestätigt nie eine Dateilöschung.",
+        "data": {
+          "allowed_user_ids": "Weitere Nicht-Administratoren",
+          "user_permissions": "Operationen für diese Nutzer",
+          "voice_devices": "Vertrauenswürdige Sprachgeräte (Assist-Satelliten)",
+          "voice_permissions": "Operationen für vertraute Sprachgeräte",
+          "automation_permissions": "Operationen für Aktionen ohne Benutzer (Automationen)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung fehlgeschlagen. URL, Port und Dienststatus prüfen.",
+      "invalid_auth": "Anmeldung fehlgeschlagen. Benutzername, Passwort oder API-Schlüssel prüfen.",
+      "ssl_error": "Das TLS-Zertifikat konnte nicht geprüft werden. Zertifikat korrigieren oder Prüfung deaktivieren.",
+      "invalid_url": "Eine einfache http(s)-URL ohne Zugangsdaten eingeben.",
+      "unexpected_response": "Unerwartete Antwort. Die URL muss direkt auf den Dienst zeigen, nicht auf eine Login-Seite oder einen Proxy.",
+      "no_indexers": "Jackett hat keine konfigurierten Indexer. Zuerst mindestens einen in Jackett hinzufügen.",
+      "unknown": "Unerwarteter Fehler. Siehe Home-Assistant-Log.",
+      "invalid_path": "Einen absoluten Pfad mit Schrägstrichen verwenden, z. B. /data/movies.",
+      "no_destination": "Mindestens einen Zielordner festlegen."
+    }
+  },
+  "selector": {
+    "operations": {
+      "options": {
+        "read": "Suchen und lesen (Suche, Liste, Details)",
+        "add": "Downloads hinzufügen",
+        "control": "Pausieren, fortsetzen, Auftrag entfernen (Dateien bleiben)",
+        "request_deletion": "Dateilöschung anfragen (Admin muss bestätigen)"
+      }
+    }
+  },
+  "services": {
+    "search_torrents": {
+      "name": "Torrents suchen",
+      "description": "Sucht in Jackett nach Titel. Liefert eine gespeicherte, nummerierte Ergebnisliste; lädt nichts herunter.",
+      "fields": {
+        "query": {
+          "name": "Titel",
+          "description": "Gesuchter Titel, z. B. Dune."
+        },
+        "year": {
+          "name": "Jahr",
+          "description": "Optionales Erscheinungsjahr."
+        },
+        "terms": {
+          "name": "Release-Begriffe",
+          "description": "Optionale Begriffe wie 1080p oder German."
+        },
+        "limit": {
+          "name": "Ergebnisse",
+          "description": "Anzahl der Ergebnisse (Standard 3)."
+        }
+      }
+    },
+    "get_search_results": {
+      "name": "Suchergebnisse abrufen",
+      "description": "Zeigt weitere Ergebnisse einer gespeicherten Suche, ohne neu zu suchen.",
+      "fields": {
+        "search_id": {
+          "name": "Such-ID",
+          "description": "ID aus einer Suche."
+        },
+        "offset": {
+          "name": "Versatz",
+          "description": "Startposition (ab 0)."
+        },
+        "limit": {
+          "name": "Ergebnisse",
+          "description": "Anzahl der Ergebnisse."
+        }
+      }
+    },
+    "preview_torrent": {
+      "name": "Torrent vorab prüfen",
+      "description": "Wählt ein gespeichertes Ergebnis und prüft, ob es hinzugefügt werden kann. Startet keinen Download.",
+      "fields": {
+        "search_id": {
+          "name": "Such-ID",
+          "description": "ID der gespeicherten Suche."
+        },
+        "result_id": {
+          "name": "Ergebnis-ID",
+          "description": "ID des Ergebnisses. Entweder dies oder die Position."
+        },
+        "position": {
+          "name": "Position",
+          "description": "Position (ab 1) in der gespeicherten Liste. Entweder dies oder die Ergebnis-ID."
+        }
+      }
+    },
+    "add_torrent": {
+      "name": "Torrent hinzufügen",
+      "description": "Lädt ein geprüftes Ergebnis in ein konfiguriertes Ziel herunter.",
+      "fields": {
+        "search_id": {
+          "name": "Such-ID",
+          "description": "ID der gespeicherten Suche."
+        },
+        "result_id": {
+          "name": "Ergebnis-ID",
+          "description": "ID des geprüften Ergebnisses."
+        },
+        "position": {
+          "name": "Position",
+          "description": "Position (ab 1) des geprüften Ergebnisses."
+        },
+        "destination": {
+          "name": "Ziel",
+          "description": "Konfiguriertes Zielverzeichnis."
+        },
+        "subfolder": {
+          "name": "Unterordner",
+          "description": "Optionaler relativer Ordner unterhalb des Ziels."
+        },
+        "show_name": {
+          "name": "Serienname",
+          "description": "TV: Serientitel zur Ordnerplanung."
+        },
+        "show_year": {
+          "name": "Serienjahr",
+          "description": "TV: Premierenjahr der Serie."
+        },
+        "season": {
+          "name": "Staffel",
+          "description": "TV: Staffelnummer (0 für Specials)."
+        }
+      }
+    },
+    "list_torrents": {
+      "name": "Torrents auflisten",
+      "description": "Listet qBittorrent-Torrents mit Fortschritt und Status.",
+      "fields": {
+        "query": {
+          "name": "Namensfilter",
+          "description": "Nur Torrents, deren Name diesen Text enthält."
+        },
+        "offset": {
+          "name": "Versatz",
+          "description": "Startposition."
+        },
+        "limit": {
+          "name": "Ergebnisse",
+          "description": "Anzahl der Torrents."
+        }
+      }
+    },
+    "get_torrent": {
+      "name": "Torrent anzeigen",
+      "description": "Zeigt einen Torrent anhand des exakten Hashes.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exakter vollständiger Torrent-Hash."
+        }
+      }
+    },
+    "pause_torrent": {
+      "name": "Torrent pausieren",
+      "description": "Pausiert einen Torrent anhand des exakten Hashes.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exakter vollständiger Torrent-Hash."
+        }
+      }
+    },
+    "resume_torrent": {
+      "name": "Torrent fortsetzen",
+      "description": "Setzt einen Torrent anhand des exakten Hashes fort.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exakter vollständiger Torrent-Hash."
+        }
+      }
+    },
+    "remove_torrent": {
+      "name": "Torrent entfernen (Dateien behalten)",
+      "description": "Entfernt den Torrent-Auftrag; heruntergeladene Dateien bleiben erhalten.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exakter vollständiger Torrent-Hash."
+        }
+      }
+    },
+    "request_file_deletion": {
+      "name": "Dateilöschung anfragen",
+      "description": "Fragt das Löschen eines Torrents samt Dateien an. Ein Administrator muss in Home Assistant bestätigen.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exakter vollständiger Torrent-Hash."
+        }
+      }
+    }
+  }
+}
