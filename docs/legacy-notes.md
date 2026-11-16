@@ -16,10 +16,7 @@ and history from that workspace were not imported.
 | Deletion via a panel with a nonce | Kept and tightened: policy binding, single use, fingerprint, path-safety checks, admin-only websocket. |
 | TV folder planning | Kept as tested pure logic (no duplicate season folders, mixed layouts refused). |
 
-**Licensing and provenance:** the prototype's license is unknown to the author of this rewrite.
-Before publishing, the repository owner must (a) confirm they hold the rights to the prototype
-ideas reused here and (b) choose a license (for example MIT or Apache-2.0). No `LICENSE` file has
-been added on the owner's behalf.
+**Licensing and provenance:** this repository is MIT licensed (owner's choice). The prototype's own license is unknown to the author of this rewrite; the owner should confirm they hold the rights to the prototype ideas reused here.
 
 **Repository name:** the specification suggested `ha-torrent-tools`; work was done in the existing
 repository `homeassistant-torrent-helper` as instructed. The integration domain is `torrent_tools`.

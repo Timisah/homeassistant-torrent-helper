@@ -84,5 +84,4 @@ Actions (usable in scripts and automations) are listed in [docs/usage.md](docs/u
 
 ## License
 
-None chosen yet; the repository owner must decide before this is published or reused
-(see [legacy notes](docs/legacy-notes.md)). Until a `LICENSE` file exists, all rights are reserved.
+[MIT](LICENSE).
