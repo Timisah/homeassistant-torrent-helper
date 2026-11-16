@@ -1,0 +1,320 @@
+{
+  "title": "Torrent Tools",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect qBittorrent",
+        "description": "A VPN with a working kill switch is strongly recommended for BOTH Jackett and qBittorrent. This integration does not create a VPN or check for leaks; see the documentation.",
+        "data": {
+          "qbittorrent_url": "qBittorrent WebUI URL",
+          "qbittorrent_username": "Username (leave empty if the WebUI needs none)",
+          "qbittorrent_password": "Password",
+          "qbittorrent_verify_ssl": "Verify TLS certificate"
+        }
+      },
+      "jackett": {
+        "title": "Connect Jackett",
+        "description": "Jackett is only contacted through its API. Use the URL Home Assistant can reach.",
+        "data": {
+          "jackett_url": "Jackett URL",
+          "jackett_api_key": "Jackett API key",
+          "jackett_verify_ssl": "Verify TLS certificate"
+        }
+      },
+      "destinations": {
+        "title": "Destination folders",
+        "description": "Enter paths as qBittorrent sees them (for example inside its container), not Home Assistant paths. Set at least one.",
+        "data": {
+          "root_movies": "Movies folder (as seen by qBittorrent)",
+          "root_shows": "TV shows folder (as seen by qBittorrent)",
+          "root_downloads": "General downloads folder (as seen by qBittorrent)"
+        }
+      },
+      "reauth_menu": {
+        "title": "Re-authenticate",
+        "menu_options": {
+          "reauth_qbittorrent": "qBittorrent",
+          "reauth_jackett": "Jackett"
+        }
+      },
+      "reauth_qbittorrent": {
+        "title": "qBittorrent",
+        "data": {
+          "qbittorrent_url": "qBittorrent WebUI URL",
+          "qbittorrent_username": "Username (leave empty if the WebUI needs none)",
+          "qbittorrent_password": "Password",
+          "qbittorrent_verify_ssl": "Verify TLS certificate"
+        }
+      },
+      "reauth_jackett": {
+        "title": "Jackett",
+        "description": "Leave the API key empty to keep the stored one.",
+        "data": {
+          "jackett_url": "Jackett URL",
+          "jackett_api_key": "Jackett API key",
+          "jackett_verify_ssl": "Verify TLS certificate"
+        }
+      },
+      "reconfigure": {
+        "title": "Reconfigure",
+        "menu_options": {
+          "reconfigure_qbittorrent": "qBittorrent",
+          "reconfigure_jackett": "Jackett"
+        }
+      },
+      "reconfigure_qbittorrent": {
+        "title": "qBittorrent",
+        "description": "Leave the password empty to keep the stored one.",
+        "data": {
+          "qbittorrent_url": "qBittorrent WebUI URL",
+          "qbittorrent_username": "Username (leave empty if the WebUI needs none)",
+          "qbittorrent_password": "Password",
+          "qbittorrent_verify_ssl": "Verify TLS certificate"
+        }
+      },
+      "reconfigure_jackett": {
+        "title": "Jackett",
+        "description": "Leave the API key empty to keep the stored one.",
+        "data": {
+          "jackett_url": "Jackett URL",
+          "jackett_api_key": "Jackett API key",
+          "jackett_verify_ssl": "Verify TLS certificate"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect. Check the URL, port and that the service is running.",
+      "invalid_auth": "Authentication failed. Check the username, password or API key.",
+      "ssl_error": "The TLS certificate could not be verified. Fix the certificate or disable verification.",
+      "invalid_url": "Enter a plain http(s) URL without credentials.",
+      "unexpected_response": "The service answered unexpectedly. Check that the URL points at the service itself, not a login page or proxy.",
+      "no_indexers": "Jackett has no configured indexers. Add at least one in Jackett first.",
+      "unknown": "Unexpected error. See the Home Assistant log.",
+      "invalid_path": "Use an absolute path with forward slashes, e.g. /data/movies.",
+      "no_destination": "Configure at least one destination folder."
+    },
+    "abort": {
+      "reauth_successful": "Re-authentication successful.",
+      "reconfigure_successful": "Reconfiguration successful.",
+      "single_instance_allowed": "Only one Torrent Tools setup is supported."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Torrent Tools",
+        "menu_options": {
+          "destinations": "Destination folders",
+          "permissions": "Permissions"
+        }
+      },
+      "destinations": {
+        "title": "Destination folders",
+        "description": "Paths as seen by qBittorrent.",
+        "data": {
+          "root_movies": "Movies folder (as seen by qBittorrent)",
+          "root_shows": "TV shows folder (as seen by qBittorrent)",
+          "root_downloads": "General downloads folder (as seen by qBittorrent)"
+        }
+      },
+      "permissions": {
+        "title": "Permissions",
+        "description": "Administrators always have access (file deletion still needs an administrator's approval). Everything below is off until you enable it.\n\n**Trusted voice devices:** trusting an Assist satellite authorizes anyone who can speak to it. This is not speaker verification. Voice access never approves file deletion.",
+        "data": {
+          "allowed_user_ids": "Additional non-admin users",
+          "user_permissions": "Operations for those users",
+          "voice_devices": "Trusted voice devices (Assist satellites)",
+          "voice_permissions": "Operations for trusted voice devices",
+          "automation_permissions": "Operations for actions called without a user (automations)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Cannot connect. Check the URL, port and that the service is running.",
+      "invalid_auth": "Authentication failed. Check the username, password or API key.",
+      "ssl_error": "The TLS certificate could not be verified. Fix the certificate or disable verification.",
+      "invalid_url": "Enter a plain http(s) URL without credentials.",
+      "unexpected_response": "The service answered unexpectedly. Check that the URL points at the service itself, not a login page or proxy.",
+      "no_indexers": "Jackett has no configured indexers. Add at least one in Jackett first.",
+      "unknown": "Unexpected error. See the Home Assistant log.",
+      "invalid_path": "Use an absolute path with forward slashes, e.g. /data/movies.",
+      "no_destination": "Configure at least one destination folder."
+    }
+  },
+  "selector": {
+    "operations": {
+      "options": {
+        "read": "Search and read (search, list, details)",
+        "add": "Add downloads",
+        "control": "Pause, resume, remove job (files kept)",
+        "request_deletion": "Request file deletion (admin must approve)"
+      }
+    }
+  },
+  "services": {
+    "search_torrents": {
+      "name": "Search torrents",
+      "description": "Search Jackett by title. Returns a stored, numbered result list; downloads nothing.",
+      "fields": {
+        "query": {
+          "name": "Title",
+          "description": "Title to search for, e.g. Dune."
+        },
+        "year": {
+          "name": "Year",
+          "description": "Optional release year."
+        },
+        "terms": {
+          "name": "Release terms",
+          "description": "Optional terms such as 1080p or German."
+        },
+        "limit": {
+          "name": "Results",
+          "description": "How many results to show (default 3)."
+        }
+      }
+    },
+    "get_search_results": {
+      "name": "Get search results",
+      "description": "Show more results of a stored search without searching again.",
+      "fields": {
+        "search_id": {
+          "name": "Search ID",
+          "description": "ID returned by a search."
+        },
+        "offset": {
+          "name": "Offset",
+          "description": "Start position (0-based)."
+        },
+        "limit": {
+          "name": "Results",
+          "description": "How many results to show."
+        }
+      }
+    },
+    "preview_torrent": {
+      "name": "Preview torrent",
+      "description": "Select one stored result and check it can be added. Starts no download.",
+      "fields": {
+        "search_id": {
+          "name": "Search ID",
+          "description": "ID of the stored search."
+        },
+        "result_id": {
+          "name": "Result ID",
+          "description": "ID of the result. Use this or the position."
+        },
+        "position": {
+          "name": "Position",
+          "description": "1-based position in the stored list. Use this or the result ID."
+        }
+      }
+    },
+    "add_torrent": {
+      "name": "Add torrent",
+      "description": "Download a previewed result to a configured destination.",
+      "fields": {
+        "search_id": {
+          "name": "Search ID",
+          "description": "ID of the stored search."
+        },
+        "result_id": {
+          "name": "Result ID",
+          "description": "ID of the previewed result."
+        },
+        "position": {
+          "name": "Position",
+          "description": "1-based position of the previewed result."
+        },
+        "destination": {
+          "name": "Destination",
+          "description": "Configured destination folder."
+        },
+        "subfolder": {
+          "name": "Subfolder",
+          "description": "Optional relative folder below the destination."
+        },
+        "show_name": {
+          "name": "Show name",
+          "description": "TV: show title, used to plan the folder."
+        },
+        "show_year": {
+          "name": "Show year",
+          "description": "TV: premiere year of the series."
+        },
+        "season": {
+          "name": "Season",
+          "description": "TV: season number (0 for specials)."
+        }
+      }
+    },
+    "list_torrents": {
+      "name": "List torrents",
+      "description": "List qBittorrent torrents with progress and state.",
+      "fields": {
+        "query": {
+          "name": "Name filter",
+          "description": "Only torrents whose name contains this text."
+        },
+        "offset": {
+          "name": "Offset",
+          "description": "Start position."
+        },
+        "limit": {
+          "name": "Results",
+          "description": "How many torrents to show."
+        }
+      }
+    },
+    "get_torrent": {
+      "name": "Get torrent",
+      "description": "Show one torrent by exact hash.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exact full torrent hash."
+        }
+      }
+    },
+    "pause_torrent": {
+      "name": "Pause torrent",
+      "description": "Pause one torrent by exact hash.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exact full torrent hash."
+        }
+      }
+    },
+    "resume_torrent": {
+      "name": "Resume torrent",
+      "description": "Resume one torrent by exact hash.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exact full torrent hash."
+        }
+      }
+    },
+    "remove_torrent": {
+      "name": "Remove torrent (keep files)",
+      "description": "Remove a torrent job; downloaded files are kept.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exact full torrent hash."
+        }
+      }
+    },
+    "request_file_deletion": {
+      "name": "Request file deletion",
+      "description": "Ask for deletion of a torrent and its files. An administrator must approve in Home Assistant.",
+      "fields": {
+        "hash": {
+          "name": "Hash",
+          "description": "Exact full torrent hash."
+        }
+      }
+    }
+  }
+}

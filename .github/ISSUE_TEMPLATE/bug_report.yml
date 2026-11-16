@@ -1,0 +1,28 @@
+name: Bug report
+description: Something does not work
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste API keys, passwords, magnet links, real hostnames or full diagnostics without checking them.
+        Download diagnostics from the integration page (they are redacted), then review before attaching.
+  - type: input
+    attributes: {label: Home Assistant version}
+    validations: {required: true}
+  - type: input
+    attributes: {label: Torrent Tools version}
+    validations: {required: true}
+  - type: input
+    attributes: {label: qBittorrent and Jackett versions}
+  - type: dropdown
+    attributes:
+      label: How are you calling it?
+      options: [Assist by text, Assist by voice satellite, Action or automation, Setup or options flow]
+  - type: textarea
+    attributes: {label: What happened and what did you expect?}
+    validations: {required: true}
+  - type: textarea
+    attributes:
+      label: Relevant log lines
+      render: text

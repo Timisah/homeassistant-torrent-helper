@@ -1,0 +1,76 @@
+# Example only. Placeholders everywhere: nothing here is a real host, key or account.
+#
+# Goal: BOTH Jackett (indexer traffic) and qBittorrent (torrent traffic) leave the host
+# only through a VPN tunnel with a kill switch. Both containers share the Gluetun
+# container's network namespace, so they have no route to the internet except its tunnel.
+#
+# Sharing a network namespace is NOT proof of leak protection. Run the manual test in
+# docs/vpn.md (tunnel-down test) before trusting this setup.
+#
+# Provider specifics (VPN_SERVICE_PROVIDER, credentials, server selection, port forwarding)
+# are in the Gluetun wiki: https://github.com/qdm12/gluetun-wiki
+# Pin image versions you have tested instead of using a floating tag.
+
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3            # pin an exact tag you have tested
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    environment:
+      - VPN_SERVICE_PROVIDER=CHANGE_ME      # e.g. your provider's Gluetun name
+      - VPN_TYPE=wireguard                   # or openvpn
+      - WIREGUARD_PRIVATE_KEY=${WIREGUARD_PRIVATE_KEY:?set in .env}
+      - WIREGUARD_ADDRESSES=${WIREGUARD_ADDRESSES:?set in .env}
+      - SERVER_COUNTRIES=CHANGE_ME
+      - TZ=Etc/UTC
+      # Let local clients (Home Assistant) reach the published ports through the firewall.
+      # Replace with YOUR LAN subnet. Do not use 0.0.0.0/0.
+      - FIREWALL_OUTBOUND_SUBNETS=192.0.2.0/24
+      # Use Gluetun's DNS-over-TLS resolver so lookups also go through the tunnel.
+      - DOT=on
+    ports:
+      # Ports of the services that share Gluetun's network are published HERE.
+      # Bind to a LAN address only; never to a public interface or via port forwarding.
+      - "192.0.2.10:8080:8080"   # qBittorrent WebUI/API
+      - "192.0.2.10:9117:9117"   # Jackett
+    volumes:
+      - ./gluetun:/gluetun
+    restart: unless-stopped
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest   # pin an exact tag you have tested
+    container_name: qbittorrent
+    network_mode: "service:gluetun"       # no own network: only the VPN tunnel
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - WEBUI_PORT=8080
+    volumes:
+      - ./qbittorrent/config:/config
+      # These are the paths you enter in Torrent Tools (qBittorrent's view of the disk).
+      - /srv/media/movies:/data/movies
+      - /srv/media/shows:/data/shows
+      - /srv/media/downloads:/data/downloads
+    restart: unless-stopped
+
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest        # pin an exact tag you have tested
+    container_name: jackett
+    network_mode: "service:gluetun"
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ./jackett/config:/config
+    restart: unless-stopped
